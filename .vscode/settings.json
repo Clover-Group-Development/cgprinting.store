@@ -1,9 +1,3 @@
 {
-    "explorer.fileNesting.enabled": true,
-    "explorer.fileNesting.patterns": {
-        "*.html": "${basename}.ts,${basename}.scss"
-    },
-    "files.exclude": {
-        "**/node_modules": true
-    },
+    "css.validate": false
 }
