@@ -8,7 +8,7 @@ export interface IProduct extends Document {
   images: Array<IProductImage>;
 }
 
-const schema: Schema = new Schema(
+export const schema: Schema = new Schema(
   {
     displayName: { type: String, required: true },
     price: { type: Number, required: true, min: 0 },
