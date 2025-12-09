@@ -7,7 +7,8 @@ import { useEffect, useRef, useState } from "react";
 
 export default function Page() {
   const [users, setUsers] = useState<Array<IUser>>([]);
-  const [model, setModel] = useState<IUser>();
+  const [isCreate, setIsCreate] = useState(false);
+  const [model, setModel] = useState<Partial<IUser>>({});
   const fnameInputRef = useRef<HTMLInputElement>(null);
   const lnameInputRef = useRef<HTMLInputElement>(null);
   const roleSelectRef = useRef<HTMLSelectElement>(null);
@@ -18,6 +19,26 @@ export default function Page() {
       setUsers(data);
     })();
   }, []);
+
+  const renderRow = (user: IUser) => {
+    return (
+      <tr key={user._id}>
+        <td>
+          {user.lastName}, {user.firstName}
+        </td>
+        <td>{UserRole[user.role]}</td>
+        <td>
+          <button onClick={() => setModel({ ...user })}>Edit</button>
+          <button onClick={del}>Delete</button>
+        </td>
+      </tr>
+    );
+  };
+
+  const openForm = (create: boolean) => {
+    setIsCreate(create);
+    if (isCreate) setModel({});
+  };
 
   const updateModel = () => {
     const { value: firstName } = fnameInputRef.current!;
@@ -31,25 +52,46 @@ export default function Page() {
     } as IUser);
   };
 
-  const createUser = async () => {
-    await axios.post("/api/users", model);
+  const del = async () => {};
+
+  const save = async () => {
+    isCreate
+      ? await axios.post("/api/users", model)
+      : await axios.patch("/api/users", model);
+
     alert("All good!");
   };
 
   return (
     <div>
-      {users.map((u) => (
-        <div key={u._id}>
-          <h1>
-            {u.lastName}, {u.firstName}
-          </h1>
-          <h1>{u.role}</h1>
-        </div>
-      ))}
+      <button onClick={() => openForm(true)}>Add</button>
+      <table>
+        <tr>
+          <th>Fullname</th>
+          <th>Role</th>
+          <th></th>
+        </tr>
+        <tr>{users.map(renderRow)}</tr>
+      </table>
       <form className="flex flex-col">
-        <input name="firstName" onInput={updateModel} ref={fnameInputRef} />
-        <input name="lastName" onInput={updateModel} ref={lnameInputRef} />
-        <select ref={roleSelectRef}>
+        <input
+          name="firstName"
+          value={model?.firstName}
+          onInput={updateModel}
+          ref={fnameInputRef}
+        />
+        <input
+          name="lastName"
+          value={model?.lastName}
+          onInput={updateModel}
+          ref={lnameInputRef}
+        />
+        <select
+          name="role"
+          value={model?.role}
+          onChange={updateModel}
+          ref={roleSelectRef}
+        >
           <option key={0} value="0">
             Admin
           </option>
@@ -60,7 +102,7 @@ export default function Page() {
             Customer
           </option>
         </select>
-        <button type="button" onClick={createUser}>
+        <button type="button" onClick={save}>
           Create
         </button>
       </form>
