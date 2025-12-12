@@ -1,6 +1,7 @@
 "use client";
 
 import { IProduct } from "@/entities";
+import ProductCard from "@/ui/components/product-card";
 import { BlockBlobClient } from "@azure/storage-blob";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
@@ -51,10 +52,11 @@ export default function Page() {
   return (
     <div>
       {products.map((p) => (
-        <div key={p._id}>
-          <h1>{p.displayName}</h1>
-          <p>{p.price}</p>
-        </div>
+        <ProductCard
+            key={p._id}
+            title={p.displayName}
+            price={p.price}
+        />
       ))}
       <form className="flex flex-col">
         <input name="displayName" onInput={updateModel} ref={nameInputRef} />
